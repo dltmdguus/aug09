@@ -10,42 +10,73 @@
 	<link href="css/styles.css" rel="stylesheet" />
 	<script src="./js/jquery-3.7.0.min.js"></script>
 	<style type="text/css">
-	.title {
-		text-align: left;
-	}
+	.title{
+			text-align: left;
+		}
+		.detail-detail{
+			width: 100%;
+			height: auto;
+		}
+		.detail-name, .detail-date-read{
+			width: 100%;
+			height: 30px;
+			border-bottom: 1px solid #c0c0c0;
+		}
+		.detail-date-read{
+			background-color: #ffca18;
+		}
+		.detail-date{
+			padding-left:5px;
+			float: left;
+		}
+		.detail-read{
+			padding-right:10px;
+			float: right;
+		}
+		.detail-content{
+			width: 100%;
+			height: auto;
+		}
 	</style>
 	<script type="text/javascript">
 	$(function(){
 		$(".detail").click(function(){
-			let first=$(this).children("td").eq(0);
-			alert(first.text());
+			let bno = $(this).children("td").eq(0).html();
+			let title = $(this).children("td").eq(1).text();
+			let name = $(this).children("td").eq(2).html();
+			let date = $(this).children("td").eq(3).html();
+			let read = $(this).children("td").eq(4).html();
+			let comment = $(this).children("td").eq(1).children(".bg-secondary").text().length+1;
+			if(comment > 0){
+				title = title.slice(0,-comment);
+			}
+			//alert(first.text());
+			
+			$.ajax({
+				url:"./detail",
+				type:"post",
+				data: {"bno": bno},
+				dataType: "json",
+				success:function(data){
+					$(".modal-title").text(title);
+					$(".detail-name").text(name);
+					$(".detail-date").text(date);
+					$(".detail-read").text(read);
+					$(".detail-content").html(data.content);
+					$("#exampleModal").modal("show");
+					//alert(data.content);
+				},
+				error:function(error){
+					alert("에러가 발생했습니다.");
+				}
+			});
+			//$(".modal-bno").text(bno + "/" + name + "/" + read);
 		});
 	});
 	</script>
 </head>
 <body>
-	<!-- Navigation-->
-	<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-		<div class="container">
-			<a class="navbar-brand" href="./"><img
-				src="assets/img/navbar-logo.svg" alt="..." /></a>
-			<button class="navbar-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
-				aria-controls="navbarResponsive" aria-expanded="false"
-				aria-label="Toggle navigation">
-				Menu <i class="fas fa-bars ms-1"></i>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarResponsive">
-				<ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-					<li class="nav-item"><a class="nav-link" href="./board">게시판</a></li>
-					<li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
-					<li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-					<li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
-					<li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+<%@ include file="menu.jsp" %>
 	<!-- Masthead-->
 	<header class="masthead">
 		<div class="container">
@@ -72,8 +103,9 @@
 					</c:forEach>
 				</tbody>
 			</table>
-			<button type="button" class="btn btn-secondary">글쓰기</button>
+			<button type="button" class="btn btn-secondary" onclick="location.href='./write'">글쓰기</button>
 			<button type="button" id="modal1" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">모달</button>
+			<button type="button" class="modalOpen btn btn-light">모달열기</button>
 
 		</div>
 	</header>
@@ -81,18 +113,22 @@
 	<!-- Modal -->
 	<div class="modal fade" id="exampleModal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+					<h5 class="modal-title" id="exampleModalLabel"></h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
-				<div class="modal-body">...</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
+				<div class="modal-body">
+					<div class="detail-detail">
+						<div class="detail-name">이름</div>
+						<div class="detail-date-read">
+							<div class="detail-date">날짜</div>
+							<div class="detail-read">읽음</div>
+						</div>
+						<div class="detail-content">본문내용</div>
+					</div>
 				</div>
 			</div>
 		</div>
